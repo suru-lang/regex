@@ -1,26 +1,28 @@
-# 正規表現(する のライブラリ)
+English | [日本語](README_jp.md)
 
-日本語プログラミング言語 [する](https://github.com/suru-lang/suru) から、[PCRE2](https://github.com/PCRE2Project/pcre2) の正規表現を使うライブラリです。標準のライブラリ(`lib/`)には入れず、kumu の依存として使います。
+# Regular expressions (a library for Suru)
 
-## 入れ方
+A library for using [PCRE2](https://github.com/PCRE2Project/pcre2) regular expressions from [Suru (「する」)](https://github.com/suru-lang/suru), a programming language in Japanese. It is not part of the standard library (`lib/`); use it as a kumu dependency.
 
-システムに PCRE2(`libpcre2-8`、10.30 以上)を入れておきます。
+## Installing
 
-| OS | 入れ方 |
+Install PCRE2 (`libpcre2-8`, 10.30 or later) on the system.
+
+| OS | How to install |
 |---|---|
 | macOS | `brew install pcre2` |
-| Debian・Ubuntu | `sudo apt install libpcre2-dev` |
+| Debian, Ubuntu | `sudo apt install libpcre2-dev` |
 | Fedora | `sudo dnf install pcre2-devel` |
 
-プロジェクトに依存として足します。
+Add it to your project as a dependency.
 
 ```sh
 kumu 追加 github.com/suru-lang/regex
 ```
 
-PCRE2 が入っていなければ、kumu が作る前に「システムのライブラリが足りません」と入れ方を出して止めます(この `組.suru` の `外部依存` と `導入案内`)。
+If PCRE2 is not installed, kumu stops before building with 「システムのライブラリが足りません」 ("system libraries are missing") and shows how to install it (the `外部依存` and `導入案内` in this `組.suru`).
 
-## 使い方
+## Usage
 
 ```
 「正規表現」 を 読み込んで 使う
@@ -38,43 +40,43 @@ PCRE2 が入っていなければ、kumu が作る前に「システムのライ
 「あ、い、う」 を 「、」 で 正規分割してから 表示する                  # （「あ」 と 「い」 と 「う」）
 ```
 
-`「正規表現」 を 読み込む` なら、`正規表現内の正規検索する` のように前置きを付けます。
+With `「正規表現」 を 読み込む`, use the prefix, as in `正規表現内の正規検索する`.
 
-| 書き方 | 結果 |
+| Syntax | Result |
 |---|---|
-| `s を p で 正規照合する` | s のどこかが p に当てはまるか(真偽の動作) |
-| `s を p で 正規検索する` | 最初の一致。`m の 有`(m は 正規一致)か `無` |
-| `s を p で 正規全検索する` | 重ならない一致を前から全部(正規一致 のリスト) |
-| `s を p から r へ 正規置換する` | 一致を全部 r にした文字列。r の `$0`・`$1`・`${名前}` は一致と ( ) の中身、`$$` は「$」 |
-| `s を p で 正規分割する` | 一致で区切った文字列のリスト |
-| `p を 正規検査する` | パターンが読めれば「」、読めなければ「2文字目: missing closing parenthesis」のようなわけ |
-| `m から 名前 を 正規名前取得する` | `(?<名前>…)` の文字列(なければ「」。純粋な関数) |
-| `s を 正規逃避する` | 文字をそのまま探すパターン(「1+1」→「1\+1」。純粋な関数) |
+| `s を p で 正規照合する` | Whether any part of s matches p (a boolean action) |
+| `s を p で 正規検索する` | The first match: `m の 有` (m is a 正規一致) or `無` |
+| `s を p で 正規全検索する` | All non-overlapping matches from the front (a list of 正規一致) |
+| `s を p から r へ 正規置換する` | The string with every match replaced by r. `$0`, `$1` and `${名前}` in r are the match and the contents of ( ); `$$` is 「$」 |
+| `s を p で 正規分割する` | The list of strings split at the matches |
+| `p を 正規検査する` | 「」 if the pattern can be read; otherwise the reason, like 「2文字目: missing closing parenthesis」 ("character 2: …") |
+| `m から 名前 を 正規名前取得する` | The string of `(?<名前>…)` (「」 if absent; a pure function) |
+| `s を 正規逃避する` | A pattern that matches the text literally (「1+1」 → 「1\+1」; a pure function) |
 
-一致 `m`(型 `正規一致`)のフィールド:
+Fields of a match `m` (type `正規一致`):
 
-- `m の 正規全体`: 当てはまった文字列
-- `m の 正規位置`: 当てはまった所の始めの位置(1から、文字で数える)
-- `m の 正規群`: ( ) の文字列のリスト(当てはまらなかった ( ) は「」)
-- `m の 正規名前群`: `(?<名前>…)` の名前と文字列のリスト(`（（「年」 と 「2026」））`)
+- `m の 正規全体`: the matched string
+- `m の 正規位置`: the start position of the match (from 1, counted in characters)
+- `m の 正規群`: the list of strings of ( ) groups (「」 for groups that didn't take part)
+- `m の 正規名前群`: the list of names and strings of `(?<名前>…)` (`（（「年」 と 「2026」））`)
 
-## 決めたこと
+## Decisions
 
-1. **パターンは PCRE2(Perl と同じ書き方)で、UTF-8 と Unicode の文字の種類で読む。** `PCRE2_UTF` と `PCRE2_UCP` を付けるので、`.` は日本語の1文字に、`\w`・`\d`・`\b` は日本語の文字にも当てはまります。大文字小文字を区別しない(`(?i)`)、複数行(`(?m)`)、`.` を改行にも当てる(`(?s)`)は、パターンの頭に書きます。
-2. **位置は1から、文字で数える。** 標準のライブラリの「位置は1から数える」に合わせ、PCRE2 のバイトの位置を文字の数に直します。
-3. **どれも動作。** C のメモリを使うので、照合・検索・置換・分割は動作です(`…した 結果` や `…してから` で使います)。パターンを読めないと「正規表現『(』を読めません(2文字目: missing closing parenthesis)」の実行時エラーで、`試行する` で受け止められます。
-4. **毎回パターンを読み、使い終えたら解放する。** 呼ぶたびに `pcre2_compile` し、終われば `pcre2_code_free` などで解放するので、メモリは残りません。
-5. **空の一致の後は Perl と同じ。** 全検索と分割で空の一致があったら、同じ所で空でない一致を探し(`PCRE2_NOTEMPTY_ATSTART`)、なければ1文字進めます。
-6. **置き換えの `${名前}` は日本語の名前も使える。** PCRE2 の置き換えは ASCII の名前しか読まないので、渡す前に `${年}` を `${1}` のように番号に直します。
-7. **一致が無いときは `無`。** 検索の結果は する の基本の `有無`(`m の 有` か `無`)です。`取出する`・`写像する`・`連鎖する` もそのまま使えます。
-8. **C の関数は外部の関数で呼ぶ。** `pcre2_match_8` は引数が7つなので、`外部の「pcre2_match_8」（c と 対象 と … と 0）` の書き方(する の「外部の関数の引数の並び」)で呼びます。
+1. **Patterns are PCRE2 (the same syntax as Perl), read as UTF-8 with Unicode character classes.** `PCRE2_UTF` and `PCRE2_UCP` are set, so `.` matches one Japanese character, and `\w`, `\d` and `\b` match Japanese characters too. Case-insensitive (`(?i)`), multiline (`(?m)`) and dot-matches-newline (`(?s)`) are written at the head of the pattern.
+2. **Positions count from 1, in characters.** To match the standard library's "positions count from 1", PCRE2's byte positions are converted to character counts.
+3. **All are actions.** They use C memory, so matching, searching, replacing and splitting are actions (use them with `…した 結果` and `…してから`). A pattern that can't be read is the runtime error 「正規表現『(』を読めません(2文字目: missing closing parenthesis)」 ("can't read the regular expression 『(』 (…)"), catchable with `試行する`.
+4. **The pattern is compiled every time and freed after use.** Each call runs `pcre2_compile` and frees with `pcre2_code_free` and the like when done, so no memory is left behind.
+5. **After an empty match, it behaves like Perl.** When a full search or split hits an empty match, it looks for a non-empty match at the same place (`PCRE2_NOTEMPTY_ATSTART`), and otherwise advances one character.
+6. **`${名前}` in replacements can use Japanese names.** PCRE2 replacements only read ASCII names, so `${年}` is rewritten to a number like `${1}` before being passed.
+7. **No match is `無`.** The result of a search is Suru's basic `有無` (`m の 有` or `無`). `取出する`, `写像する` and `連鎖する` work on it as they are.
+8. **C functions are called as foreign functions.** `pcre2_match_8` takes seven arguments, so it is called with the form `外部の「pcre2_match_8」（c と 対象 と … と 0）` (Suru's "Argument lists for foreign functions").
 
-## 試験
+## Tests
 
 ```sh
 kumu 試験
 ```
 
-## ライセンス
+## License
 
-MIT([LICENSE](LICENSE))。PCRE2 は BSD ライセンスです。
+MIT ([LICENSE](LICENSE)). PCRE2 is under the BSD license.
