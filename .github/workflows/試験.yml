@@ -24,7 +24,7 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install pcre2 pkg-config
       - name: kumu を入れる
-        run: go install github.com/suru-lang/suru/cmd/kumu@792db8b3aa1a7ceca65035630759205cc570e6dc
+        run: go install github.com/suru-lang/suru/cmd/kumu@main
       - name: 試験
         run: ~/go/bin/kumu 試験
 
@@ -49,7 +49,7 @@ jobs:
       - name: kumu を入れる
         env:
           GOPROXY: direct
-        run: go install github.com/suru-lang/suru/cmd/kumu@792db8b3aa1a7ceca65035630759205cc570e6dc
+        run: go install github.com/suru-lang/suru/cmd/kumu@main
       - name: 試験
         run: |
           export PATH="$(cygpath -u "$(go env GOPATH)")/bin:$PATH"
