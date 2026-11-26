@@ -15,6 +15,9 @@ Install PCRE2 (`libpcre2-8`, 10.30 or later) on the system.
 | macOS | `brew install pcre2` |
 | Debian, Ubuntu | `sudo apt install libpcre2-dev` |
 | Fedora | `sudo dnf install pcre2-devel` |
+| Windows (MSYS2 UCRT64) | `pacman -S mingw-w64-ucrt-x86_64-pcre2` |
+
+On Windows, use the MSYS2 UCRT64 shell with clang, lld and pkgconf (`pacman -S mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-lld mingw-w64-ucrt-x86_64-pkgconf`) and a Suru release newer than 0.7.0 (the first with Windows support).
 
 Add it to your project as a dependency.
 
@@ -79,6 +82,8 @@ Fields of a match `m` (type `正規一致`):
 ```sh
 kumu 試験
 ```
+
+CI runs them on Linux, macOS and Windows (MSYS2).
 
 ## License
 

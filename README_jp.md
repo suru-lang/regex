@@ -15,6 +15,9 @@
 | macOS | `brew install pcre2` |
 | Debian・Ubuntu | `sudo apt install libpcre2-dev` |
 | Fedora | `sudo dnf install pcre2-devel` |
+| Windows(MSYS2 の UCRT64) | `pacman -S mingw-w64-ucrt-x86_64-pcre2` |
+
+Windows では、MSYS2 の UCRT64 のシェルで clang・lld・pkgconf(`pacman -S mingw-w64-ucrt-x86_64-clang mingw-w64-ucrt-x86_64-lld mingw-w64-ucrt-x86_64-pkgconf`)と、0.7.0 より後の する(Windows に対応した最初の版)を使います。
 
 プロジェクトに依存として足します。
 
@@ -79,6 +82,8 @@ PCRE2 が入っていなければ、kumu が作る前に「システムのライ
 ```sh
 kumu 試験
 ```
+
+CI では Linux・macOS・Windows(MSYS2)で動かします。
 
 ## ライセンス
 
