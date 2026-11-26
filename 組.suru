@@ -1,4 +1,4 @@
 名前 とは 「正規表現」
-版 とは 「0.2.0」
+版 とは 「0.3.0」
 外部依存 とは 「libpcre2-8@10.30」
 導入案内 とは 「macOS: brew install pcre2」 と 「Debian・Ubuntu: sudo apt install libpcre2-dev」 と 「Fedora: sudo dnf install pcre2-devel」 と 「Windows(MSYS2 UCRT64): pacman -S mingw-w64-ucrt-x86_64-pcre2」
