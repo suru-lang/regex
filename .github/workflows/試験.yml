@@ -27,3 +27,30 @@ jobs:
         run: go install github.com/suru-lang/suru/cmd/kumu@main
       - name: 試験
         run: ~/go/bin/kumu 試験
+
+  # Windows では MSYS2 の UCRT64(clang・Go・pkg-config・PCRE2)で作る
+  windows:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            git
+            mingw-w64-ucrt-x86_64-clang
+            mingw-w64-ucrt-x86_64-go
+            mingw-w64-ucrt-x86_64-pkgconf
+            mingw-w64-ucrt-x86_64-pcre2
+      - name: kumu を入れる
+        env:
+          GOPROXY: direct
+        run: go install github.com/suru-lang/suru/cmd/kumu@main
+      - name: 試験
+        run: |
+          export PATH="$(cygpath -u "$(go env GOPATH)")/bin:$PATH"
+          kumu 試験
