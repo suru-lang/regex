@@ -6,7 +6,7 @@ A library for using [PCRE2](https://github.com/PCRE2Project/pcre2) regular expre
 
 ## Installing
 
-Suru 0.7.0 or later is required (the library writes procedures with 「以下の手順です … 以上です」).
+Suru 0.9.0 or later is required (the library writes procedures with 「以下の手順です … 以上です」 and its C functions with 「以下の外部の入出力動作です … 以上です」).
 
 Install PCRE2 (`libpcre2-8`, 10.30 or later) on the system.
 
