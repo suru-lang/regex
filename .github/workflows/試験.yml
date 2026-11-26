@@ -28,7 +28,7 @@ jobs:
       - name: 試験
         run: ~/go/bin/kumu 試験
 
-  # Windows では MSYS2 の UCRT64(clang・Go・pkg-config・PCRE2)で作る
+  # Windows では MSYS2 の UCRT64(clang・lld・Go・pkg-config・PCRE2)で作る。lld は日本語の道(出力/)に書くのに要る
   windows:
     runs-on: windows-latest
     defaults:
@@ -43,13 +43,14 @@ jobs:
           install: >-
             git
             mingw-w64-ucrt-x86_64-clang
+            mingw-w64-ucrt-x86_64-lld
             mingw-w64-ucrt-x86_64-go
             mingw-w64-ucrt-x86_64-pkgconf
             mingw-w64-ucrt-x86_64-pcre2
       - name: kumu を入れる
         env:
           GOPROXY: direct
-        run: go install github.com/suru-lang/suru/cmd/kumu@main
+        run: go install github.com/suru-lang/suru/cmd/kumu@ff847e8aa6e374b95635497b032d5788b50c44cb
       - name: 試験
         run: |
           export PATH="$(cygpath -u "$(go env GOPATH)")/bin:$PATH"
