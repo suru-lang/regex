@@ -1,34 +1,28 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 sugarsweetrobotics
-# 「する」の正規表現のライブラリ(PCRE2 の libpcre2-8 を外部の関数として呼びます)
-# 使うファイルに 「正規表現」 を 読み込んで 使う と書きます(名前はどれも 正規 で始まります)。
+# Regular expressions for Suru. It calls PCRE2 (libpcre2-8) through external functions.
+# Write `「正規表現」 を 読み込んで 使う` in your file. Every name starts with `正規`.
 #
-# パターンは PCRE2 の書き方(Perl と同じ)で、UTF-8 と Unicode の文字の種類で読みます。
-# 「.」は1文字(日本語の1文字も1つ)、\w・\d・\b は日本語の文字も数えます。
-# 大文字小文字を区別しないなら (?i)、複数行なら (?m)、「.」を改行にも当てるなら (?s) をパターンの頭に書きます。
-# 位置は1から、文字で数えます(バイトではありません)。
+# Patterns use the PCRE2 syntax (the same as Perl), read as UTF-8 with Unicode character classes.
+# `.` is one character (one Japanese character is one too), and `\w`, `\d` and `\b` count Japanese characters as well.
+# Put `(?i)` at the head of a pattern to ignore case, `(?m)` for multi-line, and `(?s)` to let `.` match a newline.
+# Positions start at 1 and count characters, not bytes.
 #
-# 一致は組 正規一致 です。
-#   m の 正規全体      … 当てはまった文字列
-#   m の 正規位置      … 当てはまった所の始めの位置(1から、文字で)
-#   m の 正規群        … ( ) で囲んだ部分の文字列のリスト(当てはまらなかったものは「」)
-#   m の 正規名前群    … (?<名前>…) の名前と文字列の組のリスト(（「年」 と 「2026」） のリスト)
+# A match is the record `正規一致`:
 #
-# どれも動作です(パターンが読めなければ実行時エラー。試行する で受け止められます)。
-#   s を p で 正規照合する          … s のどこかが p に当てはまるか(真偽)
-#   s を p で 正規検索する          … 最初の一致。有 の中に 正規一致、なければ 無
-#   s を p で 正規全検索する        … 重ならない一致を前から全部(正規一致 のリスト)
-#   s を p から r へ 正規置換する    … 一致を全部 r にした文字列。r の $1・${名前} は ( ) の中身、$$ は「$」
-#   s を p で 正規分割する          … 一致で区切った文字列のリスト
-#   p を 正規検査する              … パターンが読めれば「」、読めなければそのわけ
-# 純粋な関数:
-#   m から 名前 を 正規名前取得する  … 名前つきの ( ) の文字列(なければ「」)
-#   s を 正規逃避する              … 文字をそのまま探すパターンにする(「1+1」→「1\+1」)
+# - `m の 正規全体`: the matched string.
+# - `m の 正規位置`: where the match starts (from 1, in characters).
+# - `m の 正規群`: the strings of the `( )` groups (「」 for a group that did not match).
+# - `m の 正規名前群`: the pairs of name and string of the `(?<名前>…)` groups, like `（「年」 と 「2026」）`.
+#
+# The functions that run a pattern are actions. A pattern that cannot be read is a runtime error, which `試行する` can catch.
 外部の「pcre2-8」 を 読み込む
 外部の「c」 を 読み込む
 「標準」 を 読み込んで 使う
 
+# One match: the matched string, where it starts (from 1, in characters), the strings of the `( )` groups and the named groups.
 正規一致 とは 正規全体 と 正規位置 と 正規群 と 正規名前群 の 組
+# Used inside the library: the group number and the name of one named group.
 正規名前項目 とは 名前番号 と 名前文字 の 組
 
 # --- C の関数 ---
@@ -123,6 +117,7 @@ xs を 零前取得する とは
 
 # --- 対象の文字列(C のメモリに写して、終わりに 0 を置く) ---
 
+# Used inside the library: the subject string copied to C memory, with its length in bytes.
 正規対象 とは 対象場所 と 対象長さ の 組
 
 文字列 を 対象作成する は 正規対象 の 動作
@@ -190,12 +185,13 @@ p を 翻訳する とは 以下の手順です
   c を p で 翻訳確認する
   以上です
 
+# 「」 if the pattern p can be read, otherwise the reason it cannot.
 文字列 を 正規検査する は 文字列 の 動作
 p を 正規検査する とは p を 誤説明取得する
 
 # --- 照合 ---
 
-# 一致の作り: 位置表(バイトの始めと終わりの組)と名前の表から 正規一致 を作る
+# Used inside the library: a compiled pattern with its match data, subject, number of groups and table of names.
 正規照合器 とは 照合符号 と 照合領域 と 照合対象 と 群数 と 名前表 の 組
 
 文字列 を 文字列 で 照合器作成する は 正規照合器 の 動作
@@ -313,6 +309,7 @@ e を 群 で 名前組にする とは e の 名前文字 と （群 から e �
 
 # --- 使う関数 ---
 
+# 真 if some part of s matches the pattern p.
 文字列 を 文字列 で 正規照合する は 真偽 の 動作
 s を p で 正規照合する とは 以下の手順です
   g とは s を p で 照合器作成した 結果
@@ -321,6 +318,7 @@ s を p で 正規照合する とは 以下の手順です
   r >= 0 を 結果にする
   以上です
 
+# The first match of p in s, in `有`, or `無` when there is none.
 文字列 を 文字列 で 正規検索する は 正規一致 の 有無 の 動作
 s を p で 正規検索する とは 以下の手順です
   g とは s を p で 照合器作成した 結果
@@ -338,6 +336,7 @@ g を r で 検索結果組立する とは
 正規一致 の 動作 を 有包装する は 正規一致 の 有無 の 動作
 m を 有包装する とは m を （x を 受け取って x の 有 を 返すこと） で 写像する
 
+# All the matches of p in s from the front, not overlapping.
 文字列 を 文字列 で 正規全検索する は 正規一致 の リスト の 動作
 s を p で 正規全検索する とは 以下の手順です
   g とは s を p で 照合器作成した 結果
@@ -393,6 +392,7 @@ b を 文字幅にする とは
   そうでなければ もし b < 240 ならば 3
   そうでなければ 4
 
+# s with every match of p replaced by r. In r, `$1` and `${名前}` are the contents of a group, and `$$` is 「$」.
 文字列 を 文字列 から 文字列 へ 正規置換する は 文字列 の 動作
 s を p から r へ 正規置換する とは 以下の手順です
   c とは p を 翻訳した 結果
@@ -444,6 +444,7 @@ rc を 置換失敗する とは 以下の手順です
 空 から r を 名前参照番号化する とは r
 表 から r を 名前参照番号化する とは 表 の 残り から （r を （「${」 + 表 の 先頭 の 名前文字 + 「}」） から （「${」 + （表 の 先頭 の 名前番号 を 文字列化する） + 「}」） へ 置換する） を 名前参照番号化する
 
+# The strings of s split at each match of p.
 文字列 を 文字列 で 正規分割する は 文字列 の リスト の 動作
 s を p で 正規分割する とは （s を p で 正規全検索する） を （ms を 受け取って （s を ms で 1 に 一致間分割する） を 返すこと） で 写像する
 
@@ -456,12 +457,14 @@ s を ms で i に 一致間分割する とは
 文字列 を 数 から 数 で 部分取出する は 文字列
 s を i から j で 部分取出する とは （（（s を 文字分解する） から i - 1 を 先頭削除する） から （j - i を 範囲外切詰する） を 先頭取得する） を 「」 で 結合する
 
+# The string of the named group 名前 in the match m (「」 when there is no such group).
 正規一致 から 文字列 を 正規名前取得する は 文字列
 m から 名前 を 正規名前取得する とは （m の 正規名前群 から （x を 受け取って （x の 先頭 が 名前） を 返すこと） で 選別する） を 名前値取得する
 
 文字列 の リスト の リスト を 名前値取得する は 文字列
 xs を 名前値取得する とは もし xs が 空 ならば 「」 そうでなければ xs の 先頭 から 2 を 番目取得する
 
+# A pattern that finds s literally, with the special characters escaped (「1+1」 becomes 「1\+1」).
 文字列 を 正規逃避する は 文字列
 s を 正規逃避する とは （（s を 文字分解する） の それぞれ を 一字逃避する） を 「」 で 結合する
 

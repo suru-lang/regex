@@ -77,6 +77,17 @@ Fields of a match `m` (type `正規一致`):
 7. **No match is `無`.** The result of a search is Suru's basic `有無` (`m の 有` or `無`). `取出する`, `写像する` and `連鎖する` work on it as they are.
 8. **C functions are called as foreign functions.** `pcre2_match_8` takes seven arguments, so it is called with the form `外部の「pcre2_match_8」（c と 対象 と … と 0）` (Suru's "Argument lists for foreign functions").
 
+## API documentation
+
+The API documentation is made from the comments in `正規表現.suru`: the head comment of the file and the comment right above each public definition, written in English.
+
+```sh
+kumu 文書                                                            # writes docs/api/正規表現.md
+pip install -r docs/requirements.txt && sphinx-build docs docs/_build   # HTML in docs/_build
+```
+
+`docs/` and `.readthedocs.yaml` were written by `kumu 文書 --雛形` (Suru 0.11.0 or later). On every build, Read the Docs downloads kumu 0.11.0, runs `kumu 文書 --出力 docs/api` and then Sphinx, so the generated pages are not committed. The editor hover shows the same descriptions.
+
 ## Tests
 
 ```sh
