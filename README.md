@@ -79,7 +79,7 @@ Fields of a match `m` (type `正規一致`):
 
 ## API documentation
 
-The API documentation is made from the comments in `正規表現.suru`: the head comment of the file and the comment right above each public definition, written in English.
+The API documentation is made from the comments in `正規表現.suru`: the head comment of the file and the comment right above each public definition, written in English. It is published at https://suru-lang-regex.readthedocs.io/en/latest/.
 
 ```sh
 kumu 文書                                                            # writes docs/api/正規表現.md
